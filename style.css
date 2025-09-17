@@ -1,0 +1,3 @@
+#info_label_1, #info_label_2, #info_label_3, #email_label, #chars_label, #exam_desc_label {
+    display: none; /* Or visibility: hidden; */
+}
