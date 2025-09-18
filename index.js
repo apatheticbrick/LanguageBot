@@ -1,8 +1,10 @@
 function submitInput() {
-    words = document.getElementById("chars_input").value;
+    words = document.getElementById("chars_input").value.replace(/\n/g, " <br> ");
     email = document.getElementById("email_input").value;
-    exam_desc = document.getElementById("exam_desc_input").value;
+    exam_desc = document.getElementById("exam_desc_input").value.replace(/\n/g, " <br> ");
     document.getElementById("myH1").textContent = `Creating exam...`;
+
+    /*console.log(words);*/
 
     const input_elements = ["chars_input", 
         "email_input", 
@@ -29,7 +31,7 @@ function submitInput() {
     ]
 
     output_elements.forEach(function (item, index) {
-        document.getElementById(item).style.display = 'block';
+        document.getElementById(item).style.display = 'initial';
     });
 
     /* document.getElementById("chars_input").style.visibility = 'hidden';
