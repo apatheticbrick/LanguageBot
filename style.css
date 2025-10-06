@@ -91,6 +91,7 @@ label {
     height: 120px;
     color: #4CAF50;
     display: none;
+    margin: auto;
 }
 
 #speaker-icon {
