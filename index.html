@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="n">
+<html lang="en">
     <head>
         <meta charset="UTF-8">
         <title>LanguageBot</title>
@@ -7,28 +7,90 @@
     </head>
     <body>
         <script src="index.js"></script>
-        <h1 id="myH1">Welcome to LanguageBot</h1>
 
-        <label id="email_input_label">email: </label>
-        <label id="info_label_1">email: </label>
-        <br>
-        <input id="email_input">
-        <p id="email_label"><br></p>
-        <br>
-        <label id="chars_input_label">words & grammar structures (line breaks between each word/structure): </label>
-        <label id="info_label_2">words & grammar structures: </label>
-        <br>
-        <textarea id="chars_input" cols="40" rows="5"></textarea>
-        <p id="chars_label"></p>
-        <br>
-        <label id="exam_desc_input_label">exam description: </label>
-        <label id="info_label_3">exam description: </label>
-        <br>
-        <textarea id="exam_desc_input" cols="40" rows="5"></textarea>
-        <p id="exam_desc_label"></p>
-        <br><br>
-        <button id="submit" onclick="submitInput()">submit</button>
+        <!-- PAGE 1: LANDING PAGE -->
+        <div id="landing-page" class="page">
+            <h1>Welcome to LanguageBot</h1>
 
+            <label for="email_input">Email:</label>
+            <br>
+            <input type="email" id="email_input" placeholder="Enter your email">
+            <br><br>
+
+            <label for="chars_input">Words, phrases, and grammar structures (separated by line breaks):</label>
+            <br>
+            <textarea id="chars_input" cols="40" rows="5" placeholder="Enter vocabulary and grammar structures, one per line"></textarea>
+            <br><br>
+
+            <label for="exam_desc_input">Exam description:</label>
+            <br>
+            <textarea id="exam_desc_input" cols="40" rows="5" placeholder="Describe the exam"></textarea>
+            <br><br>
+
+            <button id="submit" onclick="goToStartPage()">Submit</button>
+        </div>
+
+        <!-- PAGE 2: START PAGE -->
+        <div id="start-page" class="page">
+            <h1>Exam Ready</h1>
+
+            <p id="instructions">When you start the exam, you will see a speaker icon, which means that the chatbot is speaking. Listen to the chatbot's voice. Once the chatbot is done speaking, a microphone icon will appear, meaning that you will speak. Respond to the chatbot in Chinese. When you have finished responding, press the "End Message" button. You and the chatbot will continue talking until you press the "End Conversation" button. Make sure to follow the instructions of the exam and use all the required vocabulary.</p>
+            <br>
+
+            <div id="exam-info">
+                <p><strong>Email:</strong> <span id="email_label"></span></p>
+                <p><strong>Words & Grammar Structures:</strong></p>
+                <p id="chars_label"></p>
+                <p><strong>Exam Description:</strong></p>
+                <p id="exam_desc_label"></p>
+            </div>
+            <br>
+
+            <button id="start-conversation-btn" onclick="goToConversationPage()">Start Conversation</button>
+        </div>
+
+        <!-- PAGE 3: CONVERSATION PAGE -->
+        <div id="conversation-page" class="page">
+            <h1>Conversation in Progress</h1>
+
+            <div id="icon-container">
+                <svg id="speaker-icon" class="conversation-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                </svg>
+                <svg id="microphone-icon" class="conversation-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/>
+                </svg>
+            </div>
+
+            <div id="status-text">Listening to chatbot...</div>
+            <br>
+
+            <button id="end-message-btn" onclick="endMessage()">End Message</button>
+            <br><br>
+            <button id="end-conversation-btn" onclick="endConversation()">End Conversation</button>
+        </div>
+
+        <!-- PAGE 4: POST-CONVERSATION PAGE -->
+        <div id="post-conversation-page" class="page">
+            <h1>Score Report</h1>
+
+            <div id="score-report">
+                <h2>Conversation Transcript</h2>
+                <div id="transcript"></div>
+                <br>
+
+                <h2>Statistics</h2>
+                <p id="word-count"></p>
+                <br>
+
+                <h2>Grammar Feedback</h2>
+                <p id="grammar-feedback">Analyzing your conversation...</p>
+            </div>
+            <br>
+
+            <button id="send-email-btn" onclick="sendReportToEmail()">Send Report to Email</button>
+            <button id="print-report-btn" onclick="printReport()">Print Report</button>
+        </div>
 
     </body>
 </html>

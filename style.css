@@ -1,3 +1,204 @@
-#info_label_1, #info_label_2, #info_label_3, #email_label, #chars_label, #exam_desc_label {
-    display: none; /* Or visibility: hidden; */
+/* Global Styles */
+body {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+h1 {
+    color: #333;
+    text-align: center;
+}
+
+h2 {
+    color: #555;
+    margin-top: 20px;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 5px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+label {
+    font-weight: bold;
+    color: #333;
+}
+
+/* Page Display Management */
+.page {
+    display: none;
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Landing Page */
+#landing-page {
+    display: block;
+}
+
+/* Start Page */
+#exam-info {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 4px solid #4CAF50;
+}
+
+#email_label, #chars_label, #exam_desc_label, #instructions {
+    white-space: pre-line;
+}
+
+#instructions {
+    background-color: #e8f5e9;
+    padding: 15px;
+    border-radius: 5px;
+    line-height: 1.6;
+}
+
+/* Conversation Page */
+#icon-container {
+    text-align: center;
+    margin: 40px 0;
+}
+
+.conversation-icon {
+    width: 120px;
+    height: 120px;
+    color: #4CAF50;
+    display: none;
+}
+
+#speaker-icon {
+    display: block;
+}
+
+#status-text {
+    text-align: center;
+    font-size: 18px;
+    color: #555;
+    min-height: 30px;
+    margin: 20px 0;
+}
+
+#end-message-btn, #end-conversation-btn {
+    display: block;
+    margin: 10px auto;
+    width: 200px;
+}
+
+#end-conversation-btn {
+    background-color: #f44336;
+}
+
+#end-conversation-btn:hover {
+    background-color: #da190b;
+}
+
+/* Post-Conversation Page */
+#score-report {
+    background-color: #fafafa;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+#transcript {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 15px;
+    background-color: white;
+    border-radius: 5px;
+}
+
+.user-message {
+    background-color: #e3f2fd;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 5px;
+    border-left: 4px solid #2196F3;
+}
+
+.llm-message {
+    background-color: #f1f8e9;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 5px;
+    border-left: 4px solid #8BC34A;
+}
+
+mark {
+    background-color: #ffeb3b;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+#word-count {
+    font-size: 18px;
+    font-weight: bold;
+    color: #4CAF50;
+}
+
+#grammar-feedback {
+    background-color: #fff3cd;
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 4px solid #ffc107;
+    line-height: 1.6;
+}
+
+#send-email-btn {
+    background-color: #2196F3;
+}
+
+#send-email-btn:hover {
+    background-color: #0b7dda;
+}
+
+#print-report-btn {
+    background-color: #ff9800;
+}
+
+#print-report-btn:hover {
+    background-color: #e68900;
+}
+
+/* Print Styles */
+@media print {
+    body {
+        background-color: white;
+    }
+
+    button {
+        display: none;
+    }
+
+    .page {
+        box-shadow: none;
+    }
 }
