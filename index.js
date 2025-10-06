@@ -8,9 +8,6 @@ let synthesis = window.speechSynthesis;
 let isLLMSpeaking = false;
 let isUserSpeaking = false;
 let currentTranscript = '';
-let mediaRecorder;
-let audioChunks = [];
-let useNativeSpeechRecognition = false;
 
 // PAGE NAVIGATION
 function showPage(pageId) {
@@ -64,41 +61,37 @@ function goToConversationPage() {
 // SPEECH RECOGNITION SETUP
 function initializeSpeechRecognition() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if (SpeechRecognition) {
-        // Use native Web Speech API (Chrome, Edge, Opera)
-        useNativeSpeechRecognition = true;
-        recognition = new SpeechRecognition();
-        recognition.lang = 'zh-CN'; // Chinese language
-        recognition.continuous = true;
-        recognition.interimResults = true;
-
-        recognition.onresult = function(event) {
-            let interimTranscript = '';
-            let finalTranscript = '';
-
-            for (let i = event.resultIndex; i < event.results.length; i++) {
-                const transcript = event.results[i][0].transcript;
-                if (event.results[i].isFinal) {
-                    finalTranscript += transcript;
-                } else {
-                    interimTranscript += transcript;
-                }
-            }
-
-            currentTranscript = finalTranscript || interimTranscript;
-            document.getElementById('status-text').textContent = 'You: ' + currentTranscript;
-        };
-
-        recognition.onerror = function(event) {
-            console.error('Speech recognition error:', event.error);
-            document.getElementById('status-text').textContent = 'Error: ' + event.error;
-        };
-    } else {
-        // Fallback for Firefox and other browsers using MediaRecorder API
-        useNativeSpeechRecognition = false;
-        console.log('Using MediaRecorder API fallback for speech recognition');
+    if (!SpeechRecognition) {
+        alert('Speech recognition is not supported in your browser. Please use Chrome.');
+        return;
     }
+
+    recognition = new SpeechRecognition();
+    recognition.lang = 'zh-CN'; // Chinese language
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    recognition.onresult = function(event) {
+        let interimTranscript = '';
+        let finalTranscript = '';
+
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+                finalTranscript += transcript;
+            } else {
+                interimTranscript += transcript;
+            }
+        }
+
+        currentTranscript = finalTranscript || interimTranscript;
+        document.getElementById('status-text').textContent = 'You: ' + currentTranscript;
+    };
+
+    recognition.onerror = function(event) {
+        console.error('Speech recognition error:', event.error);
+        document.getElementById('status-text').textContent = 'Error: ' + event.error;
+    };
 }
 
 // CONVERSATION MANAGEMENT
@@ -147,112 +140,34 @@ function speakText(text) {
 }
 
 function startListening() {
-    if (!isUserSpeaking) {
+    if (recognition && !isUserSpeaking) {
         isUserSpeaking = true;
         currentTranscript = '';
         document.getElementById('status-text').textContent = 'Your turn to speak...';
-
-        if (useNativeSpeechRecognition && recognition) {
-            recognition.start();
-        } else {
-            startMediaRecorderListening();
-        }
+        recognition.start();
     }
-}
-
-function startMediaRecorderListening() {
-    navigator.mediaDevices.getUserMedia({ audio: true })
-        .then(function(stream) {
-            audioChunks = [];
-            mediaRecorder = new MediaRecorder(stream);
-
-            mediaRecorder.ondataavailable = function(event) {
-                audioChunks.push(event.data);
-            };
-
-            mediaRecorder.onstop = function() {
-                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                sendAudioForTranscription(audioBlob);
-                stream.getTracks().forEach(track => track.stop());
-            };
-
-            mediaRecorder.start();
-            document.getElementById('status-text').textContent = 'Recording... Click "End Message" when done.';
-        })
-        .catch(function(err) {
-            console.error('Error accessing microphone:', err);
-            document.getElementById('status-text').textContent = 'Error: Could not access microphone';
-            isUserSpeaking = false;
-        });
 }
 
 function endMessage() {
-    if (isUserSpeaking) {
-        if (useNativeSpeechRecognition && recognition) {
-            recognition.stop();
-            isUserSpeaking = false;
-
-            if (currentTranscript.trim()) {
-                conversationHistory.push({ speaker: 'User', text: currentTranscript });
-
-                // Send user's response to LLM
-                llmSpeak(currentTranscript, false);
-            } else {
-                document.getElementById('status-text').textContent = 'No speech detected. Please try again.';
-                showMicrophoneIcon();
-            }
-        } else if (mediaRecorder && mediaRecorder.state === 'recording') {
-            mediaRecorder.stop();
-            document.getElementById('status-text').textContent = 'Processing audio...';
-        }
-    }
-}
-
-async function sendAudioForTranscription(audioBlob) {
-    try {
-        // IMPORTANT: You need to implement a backend API endpoint that handles speech-to-text
-        // This example uses Google Cloud Speech-to-Text, but you need to set up your own backend
-
-        // Option 1: Send to your own backend server
-        const formData = new FormData();
-        formData.append('audio', audioBlob);
-        formData.append('language', 'zh-CN');
-
-        const response = await fetch('/api/transcribe', {
-            method: 'POST',
-            body: formData
-        });
-
-        if (!response.ok) {
-            throw new Error('Transcription service unavailable');
-        }
-
-        const data = await response.json();
-        currentTranscript = data.transcript || '';
-
+    if (isUserSpeaking && recognition) {
+        recognition.stop();
         isUserSpeaking = false;
 
         if (currentTranscript.trim()) {
-            document.getElementById('status-text').textContent = 'You: ' + currentTranscript;
             conversationHistory.push({ speaker: 'User', text: currentTranscript });
+
+            // Send user's response to LLM
             llmSpeak(currentTranscript, false);
         } else {
             document.getElementById('status-text').textContent = 'No speech detected. Please try again.';
             showMicrophoneIcon();
         }
-    } catch (error) {
-        console.error('Transcription error:', error);
-        document.getElementById('status-text').textContent = 'Error: Transcription service unavailable. Please set up a backend API endpoint at /api/transcribe';
-        isUserSpeaking = false;
-        showMicrophoneIcon();
     }
 }
 
 function endConversation() {
-    if (useNativeSpeechRecognition && recognition) {
+    if (recognition) {
         recognition.stop();
-    } else if (mediaRecorder && mediaRecorder.state === 'recording') {
-        mediaRecorder.stop();
     }
     synthesis.cancel();
 
