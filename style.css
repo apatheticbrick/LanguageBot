@@ -69,7 +69,7 @@ label {
     border-left: 4px solid #4CAF50;
 }
 
-#email_label, #chars_label, #exam_desc_label, #instructions {
+#chars_label, #exam_desc_label, #instructions {
     white-space: pre-line;
 }
 
@@ -171,14 +171,6 @@ mark {
     border-radius: 5px;
     border-left: 4px solid #ffc107;
     line-height: 1.6;
-}
-
-#send-email-btn {
-    background-color: #2196F3;
-}
-
-#send-email-btn:hover {
-    background-color: #0b7dda;
 }
 
 #print-report-btn {

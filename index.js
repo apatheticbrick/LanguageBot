@@ -1,5 +1,4 @@
 // Global variables
-let userEmail = '';
 let requiredWords = [];
 let examDescription = '';
 let conversationHistory = [];
@@ -18,11 +17,10 @@ function showPage(pageId) {
 
 // PAGE 1: LANDING PAGE -> START PAGE
 function goToStartPage() {
-    userEmail = document.getElementById("email_input").value.trim();
     const wordsInput = document.getElementById("chars_input").value.trim();
     examDescription = document.getElementById("exam_desc_input").value.trim();
 
-    if (!userEmail || !wordsInput || !examDescription) {
+    if (!wordsInput || !examDescription) {
         alert('Please fill in all fields before submitting.');
         return;
     }
@@ -31,7 +29,6 @@ function goToStartPage() {
     requiredWords = wordsInput.split('\n').filter(w => w.trim() !== '');
 
     // Display on start page
-    document.getElementById("email_label").textContent = userEmail;
     document.getElementById("chars_label").textContent = requiredWords.join('\n');
     document.getElementById("exam_desc_label").textContent = examDescription;
 
@@ -236,6 +233,7 @@ function generateGrammarFeedback(userText) {
         });
 }
 
+// TODO: ADD GEMINI? (LOTS OF FREE CREDITS)
 // LLM API INTEGRATION (PLACEHOLDER - NEEDS ACTUAL IMPLEMENTATION)
 async function callLLMAPI(prompt, isFirstMessage = false, isFeedback = false) {
     // This is a placeholder. You need to implement actual API calls to OpenAI or similar service
@@ -274,25 +272,7 @@ async function callLLMAPI(prompt, isFirstMessage = false, isFeedback = false) {
     });
 }
 
-// EMAIL AND PRINT FUNCTIONS
-function sendReportToEmail() {
-    // This requires a backend service or EmailJS integration
-    // Placeholder implementation
-    alert(`Score report will be sent to ${userEmail}. (Note: Email functionality requires backend integration or EmailJS setup)`);
-
-    // Example using EmailJS (requires EmailJS account and setup):
-    /*
-    emailjs.send("service_id", "template_id", {
-        to_email: userEmail,
-        report_html: document.getElementById('score-report').innerHTML
-    }).then(function(response) {
-        alert('Report sent successfully!');
-    }, function(error) {
-        alert('Failed to send report: ' + error);
-    });
-    */
-}
-
+// PRINT FUNCTIONS
 function printReport() {
     window.print();
 }
