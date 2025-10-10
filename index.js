@@ -119,7 +119,7 @@ function llmSpeak(prompt) {
         })
         .catch(error => {
             console.error('LLM API error:', error);
-            document.getElementById('status-text').textContent = 'Error communicating with chatbot.';
+            document.getElementById('status-text').textContent = 'Error communicating with chatbot. Please reload the page and try again.';
             isLLMSpeaking = false;
             showMicrophoneIcon();
         });
@@ -238,8 +238,7 @@ function generateGrammarFeedback(userText) {
 
 // LLM API INTEGRATION
 async function callLLMAPI(prompt) {
-    // TODO: Replace with your actual API key or use a backend server
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${API_KEY}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -253,6 +252,7 @@ async function callLLMAPI(prompt) {
         })
     });
     const data = await response.json();
+    console.log(data);
     return data.candidates[0].content.parts[0].text;
 }
 
