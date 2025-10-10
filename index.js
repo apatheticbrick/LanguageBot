@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 // Global variables
 let requiredWords = [];
 let examDescription = '';
@@ -98,16 +100,16 @@ function startConversation() {
     // LLM starts the conversation
     const systemPrompt = `You are a Chinese language teacher helping a student practice Chinese conversation. The exam description is: "${examDescription}". The student needs to use these words and grammar structures: ${requiredWords.join(', ')}. Start the conversation naturally in Chinese and encourage the student to use the required vocabulary.`;
 
-    llmSpeak(systemPrompt, true);
+    llmSpeak(systemPrompt);
 }
 
-function llmSpeak(prompt, isFirstMessage = false) {
+function llmSpeak(prompt) {
     isLLMSpeaking = true;
     showSpeakerIcon();
     document.getElementById('status-text').textContent = 'Chatbot is speaking...';
 
     // Call LLM API (using a placeholder - needs actual API integration)
-    callLLMAPI(prompt, isFirstMessage)
+    callLLMAPI(prompt)
         .then(response => {
             conversationHistory.push({ speaker: 'LLM', text: response });
 
@@ -154,7 +156,7 @@ function endMessage() {
             conversationHistory.push({ speaker: 'User', text: currentTranscript });
 
             // Send user's response to LLM
-            llmSpeak(currentTranscript, false);
+            llmSpeak(currentTranscript);
         } else {
             document.getElementById('status-text').textContent = 'No speech detected. Please try again.';
             showMicrophoneIcon();
@@ -223,7 +225,7 @@ function generateScoreReport() {
 function generateGrammarFeedback(userText) {
     const feedbackPrompt = `As a Chinese language teacher, analyze this student's Chinese conversation and provide constructive grammar feedback in English. Focus on grammar mistakes, sentence structure, and areas for improvement:\n\n${userText}`;
 
-    callLLMAPI(feedbackPrompt, false, true)
+    callLLMAPI(feedbackPrompt)
         .then(feedback => {
             document.getElementById('grammar-feedback').textContent = feedback;
         })
@@ -233,20 +235,14 @@ function generateGrammarFeedback(userText) {
         });
 }
 
-// TODO: ADD GEMINI? (LOTS OF FREE CREDITS)
-// LLM API INTEGRATION (PLACEHOLDER - NEEDS ACTUAL IMPLEMENTATION)
-async function callLLMAPI(prompt, isFirstMessage = false, isFeedback = false) {
-    // This is a placeholder. You need to implement actual API calls to OpenAI or similar service
-    // For now, returning mock responses
-
-    // IMPORTANT: Replace this with actual API integration
-    // Example using OpenAI API:
-    /*
+// LLM API INTEGRATION 
+async function callLLMAPI(prompt) {
+    
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer YOUR_API_KEY'
+            'Authorization': 'Bearer ${process.env.API_KEY}'
         },
         body: JSON.stringify({
             model: 'gpt-4',
@@ -257,8 +253,8 @@ async function callLLMAPI(prompt, isFirstMessage = false, isFeedback = false) {
     });
     const data = await response.json();
     return data.choices[0].message.content;
-    */
 
+    /*
     return new Promise((resolve) => {
         setTimeout(() => {
             if (isFeedback) {
@@ -270,6 +266,7 @@ async function callLLMAPI(prompt, isFirstMessage = false, isFeedback = false) {
             }
         }, 1000);
     });
+    */
 }
 
 // PRINT FUNCTIONS
