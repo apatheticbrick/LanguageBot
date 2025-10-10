@@ -1,5 +1,3 @@
-require('dotenv').config();
-
 // Global variables
 let requiredWords = [];
 let examDescription = '';
@@ -9,6 +7,7 @@ let synthesis = window.speechSynthesis;
 let isLLMSpeaking = false;
 let isUserSpeaking = false;
 let currentTranscript = '';
+let API_KEY = '';
 
 // PAGE NAVIGATION
 function showPage(pageId) {
@@ -20,15 +19,17 @@ function showPage(pageId) {
 // PAGE 1: LANDING PAGE -> START PAGE
 function goToStartPage() {
     const wordsInput = document.getElementById("chars_input").value.trim();
-    examDescription = document.getElementById("exam_desc_input").value.trim();
+    const examDescInput = document.getElementById("exam_desc_input").value.trim();
+    API_KEY = document.getElementById("key_input").value.trim();
 
-    if (!wordsInput || !examDescription) {
+    if (!wordsInput || !examDescInput || !API_KEY) {
         alert('Please fill in all fields before submitting.');
         return;
     }
 
-    // Parse words/grammar structures
+    // Parse words/grammar structures and assign to global variables
     requiredWords = wordsInput.split('\n').filter(w => w.trim() !== '');
+    examDescription = examDescInput;
 
     // Display on start page
     document.getElementById("chars_label").textContent = requiredWords.join('\n');
@@ -237,8 +238,8 @@ function generateGrammarFeedback(userText) {
 
 // LLM API INTEGRATION
 async function callLLMAPI(prompt) {
-
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${process.env.API_KEY}`, {
+    // TODO: Replace with your actual API key or use a backend server
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -253,20 +254,6 @@ async function callLLMAPI(prompt) {
     });
     const data = await response.json();
     return data.candidates[0].content.parts[0].text;
-
-    /*
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            if (isFeedback) {
-                resolve('Your Chinese pronunciation and grammar show good progress. Consider working on your tone accuracy, especially with third tone changes. Also, try to use more complex sentence structures with 把 and 被 constructions to sound more natural.');
-            } else if (isFirstMessage) {
-                resolve('你好！很高兴见到你。今天我们来练习中文对话。你可以先介绍一下自己吗？');
-            } else {
-                resolve('很好！请继续说。');
-            }
-        }, 1000);
-    });
-    */
 }
 
 // PRINT FUNCTIONS
