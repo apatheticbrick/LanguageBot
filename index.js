@@ -18,10 +18,12 @@ function showPage(pageId) {
 
 // PAGE 1: LANDING PAGE -> START PAGE
 function goToStartPage() {
+    // Get values from landing page
     const wordsInput = document.getElementById("chars_input").value.trim();
     const examDescInput = document.getElementById("exam_desc_input").value.trim();
     API_KEY = document.getElementById("key_input").value.trim();
 
+    // If text boxes are not all filled in, alert the user
     if (!wordsInput || !examDescInput || !API_KEY) {
         alert('Please fill in all fields before submitting.');
         return;
@@ -50,11 +52,13 @@ function goToConversationPage() {
                 startConversation();
             })
             .catch(function(err) {
+                // Permission not granted
                 alert('Microphone access is required to use LanguageBot. Please allow microphone access and try again.');
                 console.error('Microphone access denied:', err);
             });
     } else {
-        alert('Your browser does not support audio recording. Please use a modern browser like Chrome.');
+        // Audio recording not available
+        alert('Your browser does not support audio recording. Please use Google Chrome.');
     }
 }
 
@@ -62,15 +66,18 @@ function goToConversationPage() {
 function initializeSpeechRecognition() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-        alert('Speech recognition is not supported in your browser. Please use Chrome.');
+        // Speech recognition not available
+        alert('Speech recognition is not supported in your browser. Please use Google Chrome.');
         return;
     }
 
+    // Set up speech recognition
     recognition = new SpeechRecognition();
     recognition.lang = 'zh-CN'; // Chinese language
     recognition.continuous = true;
     recognition.interimResults = true;
 
+    // Transcribe audio
     recognition.onresult = function(event) {
         let interimTranscript = '';
         let finalTranscript = '';
@@ -88,6 +95,7 @@ function initializeSpeechRecognition() {
         document.getElementById('status-text').textContent = 'You: ' + currentTranscript;
     };
 
+    // Speech recognition does not work
     recognition.onerror = function(event) {
         console.error('Speech recognition error:', event.error);
         document.getElementById('status-text').textContent = 'Error: ' + event.error;
@@ -100,16 +108,16 @@ function startConversation() {
 
     // LLM starts the conversation
     const systemPrompt = `You are a Chinese language teacher helping a student practice Chinese conversation. The exam description is: "${examDescription}". The student needs to use these words and grammar structures: ${requiredWords.join(', ')}. Start the conversation naturally in Chinese and encourage the student to use the required vocabulary.`;
-
     llmSpeak(systemPrompt);
 }
 
+// LLM SPEAKS
 function llmSpeak(prompt) {
     isLLMSpeaking = true;
     showSpeakerIcon();
     document.getElementById('status-text').textContent = 'Chatbot is speaking...';
 
-    // Call LLM API (using a placeholder - needs actual API integration)
+    // Call LLM API
     callLLMAPI(prompt)
         .then(response => {
             conversationHistory.push({ speaker: 'LLM', text: response });
@@ -125,10 +133,11 @@ function llmSpeak(prompt) {
         });
 }
 
+// SPEAKING CHINESE TEXT
 function speakText(text) {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'zh-CN';
-    utterance.rate = 0.9;
+    utterance.rate = 0.6;
 
     utterance.onend = function() {
         isLLMSpeaking = false;
@@ -139,6 +148,7 @@ function speakText(text) {
     synthesis.speak(utterance);
 }
 
+// LISTEN TO THE USER
 function startListening() {
     if (recognition && !isUserSpeaking) {
         isUserSpeaking = true;
@@ -148,6 +158,7 @@ function startListening() {
     }
 }
 
+// END USER MESSAGE
 function endMessage() {
     if (isUserSpeaking && recognition) {
         recognition.stop();
@@ -165,6 +176,7 @@ function endMessage() {
     }
 }
 
+// END CONVERSATION
 function endConversation() {
     if (recognition) {
         recognition.stop();
@@ -192,13 +204,14 @@ function generateScoreReport() {
     const transcriptDiv = document.getElementById('transcript');
     transcriptDiv.innerHTML = '';
 
+    // Highlight required words/structures in user messages
     conversationHistory.forEach(entry => {
         const p = document.createElement('p');
         p.className = entry.speaker === 'User' ? 'user-message' : 'llm-message';
 
         let highlightedText = entry.text;
 
-        // Highlight required words/structures in user messages
+        // If user used the word, highlight it
         if (entry.speaker === 'User') {
             requiredWords.forEach(word => {
                 const regex = new RegExp(word, 'gi');
@@ -216,13 +229,13 @@ function generateScoreReport() {
         const regex = new RegExp(word, 'i');
         return regex.test(userMessages);
     });
-
     document.getElementById('word-count').textContent = `You used ${usedWords.length} out of ${requiredWords.length} required words/grammar structures.`;
 
     // Generate grammar feedback using LLM
     generateGrammarFeedback(userMessages);
 }
 
+// GENERATE GRAMMAR FEEDBACK
 function generateGrammarFeedback(userText) {
     const feedbackPrompt = `As a Chinese language teacher, analyze this student's Chinese conversation and provide constructive grammar feedback in English. Focus on grammar mistakes, sentence structure, and areas for improvement:\n\n${userText}`;
 
