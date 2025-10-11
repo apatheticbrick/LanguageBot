@@ -6,7 +6,7 @@ LanguageBot is a website that allows you to practice having Chinese conversation
 
 You will need a Gemini API Key in order to use LanguageBot. To get one, go to [Google AI Studio](https://aistudio.google.com/app/apikey). 
 
-To start using LanguageBot, go to (INSERT WEBSITE LINK HERE).
+To start using LanguageBot, go to the [LanguageBot website](https://ryaalbr.github.io/LanguageBot/index.html).
 
 ### Landing Page
 
