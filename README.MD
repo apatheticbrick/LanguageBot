@@ -39,5 +39,6 @@ After your conversation, you will be given a report on your performance. This re
 
 - Send report to email
 - Settings for language level
+- Expand to other languages (Japanese, Spanish)
 - Account setup
 - Creating exam links
