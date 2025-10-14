@@ -23,7 +23,7 @@ You will need a Gemini API Key in order to use LanguageBot. To get one, go to [G
 
 On the landing page, type in your API key, the vocabulary you want to use, and the description of the conversation you want to have. Click the "Submit" button once you have filled out all of the required information.
 
-The API key will be used to access the model  information will be fed into an LLM, which 
+The API key will be used to access the model gemini-2.5-flash, and the description you type in will be used to prompt the model on what it should talk about.
 
 ### Start Page
 
@@ -31,13 +31,13 @@ This page will tell you the instructions for the conversation. Click the "Start 
 
 ### Conversation Page
 
+Pay attention to what the LLM is saying and respond back. When you are done responding to the LLM, click the "End Message" button. Your responses will be transcribed and prompted into the model, to which the model will reply.
 
-
-Pay attention to what the LLM is saying and respond back. When you are done responding to the LLM, click the "End Message" button. Make sure to use the required vocabulary throughout your entire conversation. Once you are done conversing, click the "End Conversation" button.
+Make sure to use the required vocabulary throughout your entire conversation. Once you are done conversing, click the "End Conversation" button.
 
 ### Report Page
 
-After your conversation, you will be given a report on your performance. This report will include a transcript of your conversation, a score denoting how much of the required vocabulary you used, and written grammar feedback from an LLM. 
+After your conversation, you will be given a report on your performance. This report will include a transcript of your conversation, a score denoting how much of the desired vocabulary you used, and written grammar feedback from an LLM. 
 
 ## Next Steps/Issues
 
