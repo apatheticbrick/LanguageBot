@@ -2,11 +2,22 @@
 
 LanguageBot is a website that allows you to practice having Chinese conversations with an LLM.
 
+A live version of LanguageBot can be accessed at [LanguageBot website](https://ryaalbr.github.io/LanguageBot/index.html).
+
+## Installation
+
+If you want to run LanguageBot locally, first clone the github repo:
+```
+git clone https://github.com/ryaalbr/LanguageBot.git
+```
+Then, run the webapp on localhost:
+```
+python3 -m http.server 8000
+```
+
 ## How to Use
 
 You will need a Gemini API Key in order to use LanguageBot. To get one, go to [Google AI Studio](https://aistudio.google.com/app/apikey). 
-
-To start using LanguageBot, go to the [LanguageBot website](https://ryaalbr.github.io/LanguageBot/index.html).
 
 ### Landing Page
 
