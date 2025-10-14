@@ -382,6 +382,7 @@ describe('LanguageBot Test Suite', () => {
 
     // ==================== UNIT TESTS ====================
 
+    // Show Page
     describe('showPage()', () => {
         test('should hide all pages and show the specified page', () => {
             const landingPage = document.getElementById('landing-page');
@@ -403,6 +404,7 @@ describe('LanguageBot Test Suite', () => {
         });
     });
 
+    // Go to Start Page
     describe('goToStartPage()', () => {
         test('should alert if any field is empty', () => {
             document.getElementById('chars_input').value = '';
@@ -458,6 +460,7 @@ describe('LanguageBot Test Suite', () => {
         });
     });
 
+    // Go to Conversation Page
     describe('goToConversationPage()', () => {
         test('should request microphone permission', async () => {
             await window.goToConversationPage();
@@ -482,6 +485,7 @@ describe('LanguageBot Test Suite', () => {
         });
     });
 
+    // Speech Recognition 
     describe('initializeSpeechRecognition()', () => {
         test('should initialize speech recognition with correct settings', () => {
             window.initializeSpeechRecognition();
@@ -523,6 +527,7 @@ describe('LanguageBot Test Suite', () => {
         });
     });
 
+    // Start Conversation
     describe('startConversation()', () => {
         test('should reset conversation history', () => {
             window.conversationHistory = [{ speaker: 'User', text: 'Old' }];
@@ -533,6 +538,7 @@ describe('LanguageBot Test Suite', () => {
         });
     });
 
+    // Have LLM Speak
     describe('llmSpeak()', () => {
         test('should set isLLMSpeaking to true', () => {
             window.llmSpeak('Test');
@@ -567,6 +573,7 @@ describe('LanguageBot Test Suite', () => {
         });
     });
 
+    // Speak Specified Text
     describe('speakText()', () => {
         test('should create speech utterance with correct settings', () => {
             window.speakText('你好');
@@ -588,6 +595,7 @@ describe('LanguageBot Test Suite', () => {
         });
     });
 
+    // Start Listening
     describe('startListening()', () => {
         test('should start recognition if not already speaking', () => {
             window.initializeSpeechRecognition();
@@ -618,6 +626,7 @@ describe('LanguageBot Test Suite', () => {
         });
     });
 
+    // End User Message
     describe('endMessage()', () => {
         test('should stop recognition when user is speaking', () => {
             window.initializeSpeechRecognition();
@@ -660,6 +669,7 @@ describe('LanguageBot Test Suite', () => {
         });
     });
 
+    // End Conversation
     describe('endConversation()', () => {
         test('should stop recognition', () => {
             window.initializeSpeechRecognition();
@@ -682,6 +692,7 @@ describe('LanguageBot Test Suite', () => {
         });
     });
 
+    // Show Speaker Icon
     describe('showSpeakerIcon()', () => {
         test('should show speaker icon and hide microphone icon', () => {
             window.showSpeakerIcon();
@@ -691,6 +702,7 @@ describe('LanguageBot Test Suite', () => {
         });
     });
 
+    // Show Mic Icon
     describe('showMicrophoneIcon()', () => {
         test('should show microphone icon and hide speaker icon', () => {
             window.showMicrophoneIcon();
@@ -700,6 +712,7 @@ describe('LanguageBot Test Suite', () => {
         });
     });
 
+    // Generate Score Report
     describe('generateScoreReport()', () => {
         test('should display conversation history in transcript', () => {
             window.conversationHistory = [
@@ -766,6 +779,7 @@ describe('LanguageBot Test Suite', () => {
         });
     });
 
+    // Generate Grammar Feedback
     describe('generateGrammarFeedback()', () => {
         test('should display feedback in grammar-feedback element', async () => {
             await window.generateGrammarFeedback('你好');
@@ -786,6 +800,7 @@ describe('LanguageBot Test Suite', () => {
         });
     });
 
+    // Call LLM API
     describe('callLLMAPI()', () => {
         test('should make POST request to Gemini API', async () => {
             window.API_KEY = 'test-key';
@@ -821,6 +836,7 @@ describe('LanguageBot Test Suite', () => {
         });
     });
 
+    // Print Report
     describe('printReport()', () => {
         test('should call window.print', () => {
             window.print = jest.fn();
