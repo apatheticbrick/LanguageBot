@@ -136,7 +136,20 @@ function llmSpeak(prompt) {
 function speakText(text) {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'zh-CN';
-    utterance.rate = 0.6;
+    utterance.rate = 0.6; 
+    utterance.pitch = 1.0;  
+    utterance.volume = 1.0; 
+
+    // Select a higher quality voice if available
+    const voices = synthesis.getVoices();
+    const chineseVoice = voices.find(voice =>
+        voice.lang.startsWith('zh') &&
+        (voice.name.includes('Premium') || voice.name.includes('Enhanced') || voice.localService === false)
+    ) || voices.find(voice => voice.lang.startsWith('zh'));
+
+    if (chineseVoice) {
+        utterance.voice = chineseVoice;
+    }
 
     utterance.onend = function() {
         isLLMSpeaking = false;
