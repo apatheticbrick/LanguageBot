@@ -10,29 +10,37 @@ const API_KEY = process.env.GEMINI_API_KEY;
 // Serve static files from public folder
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(express.json());
+
 // Proxy endpoint example: client requests /api/data?param=value
 // Server forwards request to third-party API with injected API key
-app.get('/api/*', async (req, res) => {
+app.post('/api/*splat', async (req, res) => {
     try {
         // Construct third-party API URL based on incoming request path and query
         // Example: If your third-party API base URL is "https://api.example.com"
-        const thirdPartyBaseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
+        const thirdPartyBaseUrl = 'https://generativelanguage.googleapis.com';
 
         // Extract the path after /api
         const apiPath = req.path.replace(/^\/api/, '');
 
         // Get query string parameters from original request
-        const queryParams = {...req.query, key: API_KEY}; // inject API key as query param; adjust key name if different
+        // const queryParams = {...req.query, key: API_KEY}; // inject API key as query param; adjust key name if different
 
         // Build full URL with query params
-        const url = new URL(apiPath, thirdPartyBaseUrl);
-        Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]));
+        const url = new URL(apiPath, thirdPartyBaseUrl).toString();
+
+        // Object.keys(queryParams).forEach(key => url.searchParams.append(key, queryParams[key]));
+
+        // Copy incoming headers
+        const headers = {...req.headers};
+        headers['x-goog-api-key'] = `${API_KEY}`;
+        delete headers.host;
 
         // Make request to third-party API
-        const response = await axios.get(url.toString());
+        const response = await axios.post(url, req.body, { headers });
 
         // Forward the response data back to client
-        res.json(response.data);
+        res.status(response.status).json(response.data);
 
     } catch (error) {
         console.error('API proxy error:', error.message);

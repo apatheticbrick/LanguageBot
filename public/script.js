@@ -251,7 +251,7 @@ function generateGrammarFeedback(userText) {
 
 // LLM API INTEGRATION
 async function callLLMAPI(prompt) {
-    const response = await fetch(`/api/`, {
+    const response = await fetch(`/api/v1beta/models/gemini-2.5-flash:generateContent`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
