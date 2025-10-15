@@ -21,10 +21,9 @@ function goToStartPage() {
     // Get values from landing page
     const wordsInput = document.getElementById("chars_input").value.trim();
     const examDescInput = document.getElementById("exam_desc_input").value.trim();
-    API_KEY = document.getElementById("key_input").value.trim();
 
     // If text boxes are not all filled in, alert the user
-    if (!wordsInput || !examDescInput || !API_KEY) {
+    if (!wordsInput || !examDescInput) {
         alert('Please fill in all fields before submitting.');
         return;
     }
