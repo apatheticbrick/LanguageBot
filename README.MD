@@ -2,8 +2,6 @@
 
 LanguageBot is a website that allows you to practice having Chinese conversations with an LLM.
 
-A live version of LanguageBot can be accessed at [LanguageBot website](https://ryaalbr.github.io/LanguageBot/index.html).
-
 ## Installation
 
 If you want to run LanguageBot locally, first clone the github repo:
