@@ -1,6 +1,8 @@
 {
   "dependencies": {
-    "dotenv": "^17.2.3"
+    "axios": "^1.12.2",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",
@@ -18,5 +20,20 @@
     "setupFilesAfterEnv": [
       "<rootDir>/jest.setup.js"
     ]
-  }
+  },
+  "name": "languagebot",
+  "version": "1.0.0",
+  "description": "LanguageBot is a website that allows you to practice having Chinese conversations with an LLM.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryaalbr/LanguageBot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ryaalbr/LanguageBot/issues"
+  },
+  "homepage": "https://github.com/ryaalbr/LanguageBot#readme"
 }

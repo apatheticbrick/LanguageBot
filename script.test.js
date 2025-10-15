@@ -28,7 +28,7 @@
  * - Unit tests for individual functions
  * - End-to-end test simulating full user workflow
  *
- * NOTE: Since index.js uses global variables and browser APIs, we load it fresh
+ * NOTE: Since script.js uses global variables and browser APIs, we load it fresh
  * for each test by serving the full HTML page.
  */
 
@@ -144,7 +144,7 @@ describe('LanguageBot Test Suite', () => {
         mockConsoleError = jest.fn();
         global.console.error = mockConsoleError;
 
-        // Initialize global variables (simulating index.js)
+        // Initialize global variables (simulating script.js)
         window.requiredWords = [];
         window.examDescription = '';
         window.conversationHistory = [];
@@ -155,7 +155,7 @@ describe('LanguageBot Test Suite', () => {
         window.currentTranscript = '';
         window.API_KEY = '';
 
-        // Define functions from index.js
+        // Define functions from script.js
         window.showPage = function(pageId) {
             const pages = document.querySelectorAll('.page');
             pages.forEach(page => page.style.display = 'none');
