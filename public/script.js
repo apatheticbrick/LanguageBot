@@ -107,17 +107,17 @@ function startConversation() {
 
     // LLM starts the conversation
     const systemPrompt = `You are a Chinese language teacher helping a student practice Chinese conversation. The exam description is: "${examDescription}". The student needs to use these words and grammar structures: ${requiredWords.join(', ')}. Start the conversation naturally in Chinese and encourage the student to use the required vocabulary.`;
-    llmSpeak(systemPrompt);
+    llmSpeak(systemPrompt, true);
 }
 
 // LLM SPEAKS
-function llmSpeak(prompt) {
+function llmSpeak(prompt, isInitialPrompt = false) {
     isLLMSpeaking = true;
     showSpeakerIcon();
     document.getElementById('status-text').textContent = 'Chatbot is speaking...';
 
-    // Call LLM API
-    callLLMAPI(prompt)
+    // Call LLM API with conversation history
+    callLLMAPI(prompt, isInitialPrompt)
         .then(response => {
             conversationHistory.push({ speaker: 'LLM', text: response });
 
@@ -136,7 +136,7 @@ function llmSpeak(prompt) {
 function speakText(text) {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'zh-CN';
-    utterance.rate = 0.6; 
+    utterance.rate = 0.8; 
     utterance.pitch = 1.0;  
     utterance.volume = 1.0; 
 
@@ -249,7 +249,7 @@ function generateScoreReport() {
 
 // GENERATE GRAMMAR FEEDBACK
 function generateGrammarFeedback(userText) {
-    const feedbackPrompt = `As a Chinese language teacher, analyze this student's Chinese conversation and provide constructive grammar feedback in English. Focus on grammar mistakes, sentence structure, and areas for improvement. Please format your response in plaintext, and address your response to the student:\n\n${userText}`;
+    const feedbackPrompt = `As a Chinese language teacher, analyze this student's Chinese conversation and provide constructive grammar feedback in English in a short paragraph. Focus on grammar mistakes, sentence structure, and areas for improvement. Please format your response in plaintext and do not use any markdown formatting. Address your response to the student:\n\n${userText}`;
 
     callLLMAPI(feedbackPrompt)
         .then(feedback => {
@@ -262,18 +262,63 @@ function generateGrammarFeedback(userText) {
 }
 
 // LLM API INTEGRATION
-async function callLLMAPI(prompt) {
+async function callLLMAPI(prompt, isInitialPrompt = false) {
+    let contents;
+
+    if (isInitialPrompt) {
+        // First message: send system prompt as user message
+        contents = [{
+            role: 'user',
+            parts: [{
+                text: prompt
+            }]
+        }];
+    } else {
+        // Build conversation history in Gemini format
+        contents = [];
+
+        // Add system context as first user message if conversation history is empty
+        if (conversationHistory.length === 0) {
+            contents.push({
+                role: 'user',
+                parts: [{
+                    text: `You are a Chinese language teacher helping a student practice Chinese conversation. The exam description is: "${examDescription}". The student needs to use these words and grammar structures: ${requiredWords.join(', ')}. Continue the conversation naturally in Chinese and encourage the student to use the required vocabulary.`
+                }]
+            });
+            contents.push({
+                role: 'model',
+                parts: [{
+                    text: 'I understand. I will help the student practice Chinese conversation.'
+                }]
+            });
+        }
+
+        // Add conversation history
+        conversationHistory.forEach(entry => {
+            contents.push({
+                role: entry.speaker === 'User' ? 'user' : 'model',
+                parts: [{
+                    text: entry.text
+                }]
+            });
+        });
+
+        // Add current user message
+        contents.push({
+            role: 'user',
+            parts: [{
+                text: prompt
+            }]
+        });
+    }
+
     const response = await fetch(`/api/v1beta/models/gemini-2.5-flash:generateContent`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            contents: [{
-                parts: [{
-                    text: prompt
-                }]
-            }]
+            contents: contents
         })
     });
     const data = await response.json();

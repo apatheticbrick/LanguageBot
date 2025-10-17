@@ -279,7 +279,7 @@ describe('LanguageBot Test Suite', () => {
         window.speakText = function(text) {
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'zh-CN';
-            utterance.rate = 0.6;
+            utterance.rate = 0.8;
 
             utterance.onend = function() {
                 window.isLLMSpeaking = false;
@@ -590,7 +590,7 @@ describe('LanguageBot Test Suite', () => {
             // Get the utterance instance that was created
             const utteranceInstance = window.SpeechSynthesisUtterance.mock.instances[0];
             expect(utteranceInstance.lang).toBe('zh-CN');
-            expect(utteranceInstance.rate).toBe(0.6);
+            expect(utteranceInstance.rate).toBe(0.8);
         });
 
         test('should call speechSynthesis.speak', () => {
