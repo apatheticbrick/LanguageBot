@@ -282,7 +282,7 @@ async function callLLMAPI(prompt, isInitialPrompt = false) {
             contents.push({
                 role: 'user',
                 parts: [{
-                    text: `You are a Chinese language teacher helping a student practice Chinese conversation. The exam description is: "${examDescription}". The student needs to use these words and grammar structures: ${requiredWords.join(', ')}. Continue the conversation naturally in Chinese and encourage the student to use the required vocabulary.`
+                    text: `You are a Chinese language teacher helping a student practice Chinese conversation. The conversation description is as follows: "${examDescription}". The student needs to use these words and grammar structures: ${requiredWords.join(', ')}. Continue the conversation naturally in Chinese, always following the description of the conversation. While conversing, encourage the student to use the required vocabulary.`
                 }]
             });
             contents.push({
