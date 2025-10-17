@@ -249,7 +249,7 @@ function generateScoreReport() {
 
 // GENERATE GRAMMAR FEEDBACK
 function generateGrammarFeedback(userText) {
-    const feedbackPrompt = `As a Chinese language teacher, analyze this student's Chinese conversation and provide constructive grammar feedback in English. Focus on grammar mistakes, sentence structure, and areas for improvement:\n\n${userText}`;
+    const feedbackPrompt = `As a Chinese language teacher, analyze this student's Chinese conversation and provide constructive grammar feedback in English. Focus on grammar mistakes, sentence structure, and areas for improvement. Please format your response in plaintext, and address your response to the student:\n\n${userText}`;
 
     callLLMAPI(feedbackPrompt)
         .then(feedback => {
