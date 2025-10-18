@@ -43,7 +43,6 @@ After your conversation, you will be given a report on your performance. This re
 
 ## Next Steps/Issues
 
-- need chinese speech to 
 - Send report to email
 - Settings for language level
 - Expand to other languages (Japanese, Spanish)
