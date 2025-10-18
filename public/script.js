@@ -264,34 +264,28 @@ function generateGrammarFeedback(userText) {
 // LLM API INTEGRATION
 async function callLLMAPI(prompt, isInitialPrompt = false) {
     let contents;
+    let SYSTEM_INSTRUCTION;
+    SYSTEM_INSTRUCTION = `You are a Chinese language teacher helping a student practice Chinese conversation. The conversation description is as follows: "${examDescription}". The student needs to use these words and grammar structures: ${requiredWords.join(', ')}. Continue the conversation naturally in Chinese, always following the description of the conversation. While conversing, encourage the student to use the required vocabulary. Keep your responses between 1-3 sentences. Please format your response in plaintext and do not use any markdown formatting.`;
 
     if (isInitialPrompt) {
         // First message: send system prompt as user message
-        contents = [{
+        contents = [];
+        contents.push({
             role: 'user',
             parts: [{
-                text: prompt
+                text: `[A new user has just opened the chat. Please greet them and start the conversation]`
             }]
-        }];
+        });
     } else {
         // Build conversation history in Gemini format
         contents = [];
-
-        // Add system context as first user message if conversation history is empty
-        if (conversationHistory.length === 0) {
-            contents.push({
-                role: 'user',
-                parts: [{
-                    text: `You are a Chinese language teacher helping a student practice Chinese conversation. The conversation description is as follows: "${examDescription}". The student needs to use these words and grammar structures: ${requiredWords.join(', ')}. Continue the conversation naturally in Chinese, always following the description of the conversation. While conversing, encourage the student to use the required vocabulary.`
-                }]
-            });
-            contents.push({
-                role: 'model',
-                parts: [{
-                    text: 'I understand. I will help the student practice Chinese conversation.'
-                }]
-            });
-        }
+        
+        contents.push({
+            role: 'user',
+            parts: [{
+                text: `[A new user has just opened the chat. Please greet them and start the conversation.]`
+            }]
+        });
 
         // Add conversation history
         conversationHistory.forEach(entry => {
@@ -312,13 +306,19 @@ async function callLLMAPI(prompt, isInitialPrompt = false) {
         });
     }
 
-    const response = await fetch(`/api/v1beta/models/gemini-2.5-flash:generateContent`, {
+    const response = await fetch(`/api/v1beta/models/gemini-2.5-flash-lite:generateContent`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            contents: contents
+            contents: contents,
+            systemInstruction: 
+            {
+                "parts": [
+                    {"text": SYSTEM_INSTRUCTION}
+                ]
+            }
         })
     });
     const data = await response.json();
