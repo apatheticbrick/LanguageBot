@@ -7,6 +7,7 @@ let synthesis = window.speechSynthesis;
 let isLLMSpeaking = false;
 let isUserSpeaking = false;
 let currentTranscript = '';
+let SYSTEM_INSTRUCTION = `You are a Chinese language teacher helping a student practice Chinese conversation. The conversation description is as follows: "${examDescription}". The student needs to use these words and grammar structures: ${requiredWords.join(', ')}. Continue the conversation naturally in Chinese, always following the description of the conversation. While conversing, encourage the student to use the required vocabulary. Keep your responses between 1-3 sentences. Please format your response in plaintext and do not use any markdown formatting.`;
 // let API_KEY = '';
 
 // PAGE NAVIGATION
@@ -105,19 +106,18 @@ function initializeSpeechRecognition() {
 function startConversation() {
     conversationHistory = [];
 
-    // LLM starts the conversation
-    const systemPrompt = `You are a Chinese language teacher helping a student practice Chinese conversation. The exam description is: "${examDescription}". The student needs to use these words and grammar structures: ${requiredWords.join(', ')}. Start the conversation naturally in Chinese and encourage the student to use the required vocabulary.`;
-    llmSpeak(systemPrompt, true);
+    // TODO: CHANGE LLMSPEAK FUNCTION
+    llmSpeak("");
 }
 
 // LLM SPEAKS
-function llmSpeak(prompt, isInitialPrompt = false) {
+function llmSpeak(prompt) {
     isLLMSpeaking = true;
     showSpeakerIcon();
     document.getElementById('status-text').textContent = 'Chatbot is speaking...';
 
     // Call LLM API with conversation history
-    callLLMAPI(prompt, isInitialPrompt)
+    callLLMAPI(prompt)
         .then(response => {
             conversationHistory.push({ speaker: 'LLM', text: response });
 
@@ -171,6 +171,7 @@ function startListening() {
 }
 
 // END USER MESSAGE
+// Function is called in index.html
 function endMessage() {
     if (isUserSpeaking && recognition) {
         recognition.stop();
@@ -262,12 +263,10 @@ function generateGrammarFeedback(userText) {
 }
 
 // LLM API INTEGRATION
-async function callLLMAPI(prompt, isInitialPrompt = false) {
+async function callLLMAPI(prompt) {
     let contents;
-    let SYSTEM_INSTRUCTION;
-    SYSTEM_INSTRUCTION = `You are a Chinese language teacher helping a student practice Chinese conversation. The conversation description is as follows: "${examDescription}". The student needs to use these words and grammar structures: ${requiredWords.join(', ')}. Continue the conversation naturally in Chinese, always following the description of the conversation. While conversing, encourage the student to use the required vocabulary. Keep your responses between 1-3 sentences. Please format your response in plaintext and do not use any markdown formatting.`;
 
-    if (isInitialPrompt) {
+    if (prompt.length == 0) {
         // First message: send system prompt as user message
         contents = [];
         contents.push({
