@@ -105,8 +105,7 @@ function initializeSpeechRecognition() {
 function startConversation() {
     conversationHistory = [];
 
-    // TODO: CHANGE LLMSPEAK FUNCTION
-    llmSpeak("");
+    llmSpeak();
 }
 
 // LLM SPEAKS
@@ -249,7 +248,7 @@ function generateScoreReport() {
 
 // GENERATE GRAMMAR FEEDBACK
 function generateGrammarFeedback(userText) {
-    const feedbackPrompt = `As a Chinese language teacher, analyze this student's Chinese conversation and provide constructive grammar feedback in English in a short paragraph. Focus on grammar mistakes, sentence structure, and areas for improvement. Please format your response in plaintext and do not use any markdown formatting. Address your response to the student:\n\n${userText}`;
+    const feedbackPrompt = `As a Chinese language teacher, analyze the following dialogue, which represents a student's responses in a conversation. Provide constructive grammar feedback in English in a short paragraph. Focus on grammar mistakes, sentence structure, and areas for improvement. Please format your response in plaintext and do not use any markdown formatting. Address your response to the student. \n\n${userText}`;
 
     callLLMAPI(feedbackPrompt)
         .then(feedback => {
@@ -271,9 +270,9 @@ async function callLLMAPI(prompt) {
             }]
         }
     ];
-    let SYSTEM_INSTRUCTION = `You are a Chinese language teacher helping a student practice Chinese conversation. The conversation description is as follows: "${examDescription}". The student needs to use these words and grammar structures: ${requiredWords.join(', ')}. Continue the conversation naturally in Chinese, always following the description of the conversation. While conversing, encourage the student to use the required vocabulary. Keep your responses between 1-3 sentences. Please format your response in plaintext and do not use any markdown formatting.`;
+    let SYSTEM_INSTRUCTION = `You are a Chinese language teacher helping a student practice Chinese conversation. The conversation description is as follows: "${examDescription}". The student needs to use these words and grammar structures: ${requiredWords.join(', ')}. Converse naturally in Chinese, always following the description of the conversation. While conversing, subtly encourage the student to use the required vocabulary, but try not to explicit mention the vocabulary words or the conversation topic. Keep your responses between 1-3 sentences. Please format your response in plaintext and do not use any markdown formatting.`;
 
-    if (prompt.length != 0) {
+    if (prompt !== undefined) {
         // Add conversation history
         conversationHistory.forEach(entry => {
             contents.push({
