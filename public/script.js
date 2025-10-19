@@ -7,7 +7,6 @@ let synthesis = window.speechSynthesis;
 let isLLMSpeaking = false;
 let isUserSpeaking = false;
 let currentTranscript = '';
-let SYSTEM_INSTRUCTION = `You are a Chinese language teacher helping a student practice Chinese conversation. The conversation description is as follows: "${examDescription}". The student needs to use these words and grammar structures: ${requiredWords.join(', ')}. Continue the conversation naturally in Chinese, always following the description of the conversation. While conversing, encourage the student to use the required vocabulary. Keep your responses between 1-3 sentences. Please format your response in plaintext and do not use any markdown formatting.`;
 // let API_KEY = '';
 
 // PAGE NAVIGATION
@@ -265,6 +264,7 @@ function generateGrammarFeedback(userText) {
 // LLM API INTEGRATION
 async function callLLMAPI(prompt) {
     let contents;
+    let SYSTEM_INSTRUCTION = `You are a Chinese language teacher helping a student practice Chinese conversation. The conversation description is as follows: "${examDescription}". The student needs to use these words and grammar structures: ${requiredWords.join(', ')}. Continue the conversation naturally in Chinese, always following the description of the conversation. While conversing, encourage the student to use the required vocabulary. Keep your responses between 1-3 sentences. Please format your response in plaintext and do not use any markdown formatting.`;
 
     if (prompt.length == 0) {
         // First message: send system prompt as user message
