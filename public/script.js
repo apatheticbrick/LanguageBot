@@ -169,7 +169,7 @@ function startListening() {
 }
 
 // END USER MESSAGE
-// Function is called in index.html
+// Function is called in index.html when "end message" button is pressed
 function endMessage() {
     if (isUserSpeaking && recognition) {
         recognition.stop();
