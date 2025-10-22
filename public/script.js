@@ -61,6 +61,13 @@ function goToConversationPage() {
     }
 }
 
+// CONVERSATION PAGE -> LANDING PAGE
+function goToLandingPage() {
+    document.getElementById("chars_input").value = '';
+    document.getElementById("exam_desc_input").value = '';
+    showPage('landing-page');
+}
+
 // SPEECH RECOGNITION SETUP
 function initializeSpeechRecognition() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -133,6 +140,7 @@ function llmSpeak(prompt) {
 // SPEAKING CHINESE TEXT
 function speakText(text) {
     const utterance = new SpeechSynthesisUtterance(text);
+    //hard coded because its chinese
     utterance.lang = 'zh-CN';
     utterance.rate = 0.8; 
     utterance.pitch = 1.0;  
