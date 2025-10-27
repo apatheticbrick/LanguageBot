@@ -39,7 +39,7 @@ Make sure to use the required vocabulary throughout your entire conversation. On
 
 ### Report Page
 
-After your conversation, you will be given a report on your performance. This report will include a transcript of your conversation, a score denoting how much of the desired vocabulary you used, and written grammar feedback from an LLM. 
+After your conversation, you will be given a report on your performance. This report will include a transcript of your conversation, a score denoting how much of the desired vocabulary you used, and written grammar feedback from an LLM. From there, you can print out the report or restart to start a new test.
 
 ## Next Steps/Issues
 
