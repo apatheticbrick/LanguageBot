@@ -5,7 +5,7 @@ let conversationHistory = [];
 let recognition;
 let synthesis = window.speechSynthesis;
 let isLLMSpeaking = false;
-let isUserSpeaking = false;
+let isUserSpeaking = false; // Flag controls both UI and flow
 let currentTranscript = '';
 let languageCode = 'zh-CN';
 let selectedLanguageName = 'Chinese';
@@ -33,13 +33,6 @@ function goToStartPage() {
     const languageSelect = document.getElementById('language_select');
     selectedLanguageName = languageSelect.value;
     languageCode = possibleLanguages[selectedLanguageName];
-
-    // If text boxes are not all filled in, alert the user
-    // I don't think this is necessary because sometimes you might just want to have a conversation on a random topic
-    // if (!wordsInput || !examDescInput) {
-    //     alert('Please fill in all fields before submitting.');
-    //     return;
-    // }
 
     // Parse words/grammar structures and assign to global variables
     requiredWords = wordsInput.split('\n').filter(w => w.trim() !== '');
@@ -134,59 +127,62 @@ function initializeSpeechRecognition() {
         let interimTranscript = '';
         let finalTranscript = '';
         
-        // Start from event.resultIndex to get results new to this event call
+        // Iterate from event.resultIndex (the index of the first new result) 
+        // to process only the latest segments.
         for (let i = event.resultIndex; i < event.results.length; i++) {
             const transcript = event.results[i][0].transcript;
+            
             if (event.results[i].isFinal) {
-                // For final results, append them to the main transcript buffer
+                // If it's a final result, append it to the session's overall transcript
+                // and update the global currentTranscript.
                 finalTranscript += transcript;
             } else {
-                // For interim results, just store the latest one to show to the user
+                // If it's an interim result, collect it to show the user
                 interimTranscript += transcript;
             }
         }
-
-        
-        
-        currentTranscript = ''; // Reset current for a full rebuild
-        let currentInterim = '';
-
-        for (let i = 0; i < event.results.length; i++) {
-            if (event.results[i].isFinal) {
-                currentTranscript += event.results[i][0].transcript;
-            } else {
-                currentInterim += event.results[i][0].transcript;
-            }
-        }
-        
-        // Display the accumulated final text plus the current interim text
-        document.getElementById('status-text').textContent = 'You: ' + (currentTranscript + currentInterim);
+        currentTranscript += finalTranscript; 
+        document.getElementById('status-text').textContent = 'You: ' + (currentTranscript + interimTranscript);
     };
 
     recognition.onerror = function(event) {
         console.error('Speech recognition error:', event.error);
         document.getElementById('status-text').textContent = 'Error: ' + event.error + '. Restarting listener...';
-        // Check for specific errors that stop the service (e.g., 'not-allowed', 'service-not-allowed')
-        // For general errors, we can restart listening.
-        isUserSpeaking = false; // The error stops the recognition implicitly
+        
+        // The error stops the recognition implicitly. Set flag to false and show icon.
+        isUserSpeaking = false; 
         showMicrophoneIcon();
+
         // Automatically restart listening after an error (except fatal ones like 'not-allowed')
         if (event.error !== 'not-allowed' && event.error !== 'service-not-allowed') {
             setTimeout(startListening, 1000); // Wait a second before trying again
         }
     };
     
-    // The 'end' event fires when the speech recognition service has disconnected.
-    // This happens after a recognition.stop(), or after a pause/no-speech timeout (if continuous=false).
+    // THE CRITICAL FIX: The 'end' event fires when the speech recognition service has disconnected.
+    // We run the processing logic here to ensure the service is fully stopped before proceeding.
     recognition.onend = function() {
         if (isUserSpeaking) {
-            // This case should ideally not happen if endMessage() is called, 
-            // but is a safeguard if the service stops on its own while the user is *intended* to be speaking.
-            // For now, keep the main logic in endMessage.
-            // We set isUserSpeaking to false in endMessage, so if it's true here, the service stopped prematurely.
-            console.log("Recognition ended unexpectedly.");
+            // This code runs after recognition.stop() or a timeout.
             isUserSpeaking = false; 
             showMicrophoneIcon();
+
+            // Check the accumulated transcript
+            if (currentTranscript.trim()) {
+                conversationHistory.push({ speaker: 'User', text: currentTranscript });
+                document.getElementById('status-text').textContent = 'Processing: ' + currentTranscript;
+
+                // Send user's response to LLM
+                // llmSpeak will call startListening() in its onend handler after TTS finishes
+                llmSpeak(currentTranscript);
+            } else {
+                // No speech detected. Tell user and start listening again.
+                console.log("Recognition ended with no transcript. Restarting listener...");
+                document.getElementById('status-text').textContent = 'No speech detected. Please try again.';
+                
+                // Wait briefly before restarting the mic to avoid race conditions
+                setTimeout(startListening, 500); 
+            }
         }
     };
 }
@@ -224,9 +220,9 @@ function llmSpeak(prompt) {
 function speakText(text) {
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = languageCode;
-    utterance.rate = 0.8; 
-    utterance.pitch = 1.0;  
-    utterance.volume = 1.0; 
+    utterance.rate = 0.8; 
+    utterance.pitch = 1.0;  
+    utterance.volume = 1.0; 
 
     // Select highest quality voice based on the language
     const voices = synthesis.getVoices();
@@ -250,51 +246,36 @@ function speakText(text) {
 
 // LISTEN TO THE USER
 function startListening() {
+    // We only start if recognition exists and the user is NOT currently speaking
     if (recognition && !isUserSpeaking) {
         isUserSpeaking = true;
         currentTranscript = ''; // Important: reset transcript for the new turn
-        document.getElementById('status-text').textContent = 'Your turn to speak...';
         
         // Reset the visual display when listening starts
-        document.getElementById('status-text').textContent = 'Your turn to speak...'; 
+        document.getElementById('status-text').textContent = 'Your turn to speak...'; 
 
         // Add a try-catch in case recognition.start() fails after an error
         try {
             recognition.start();
         } catch (e) {
+            // Often catches "Failed to execute 'start' on 'SpeechRecognition': recognition has already started" 
+            // but in a correctly implemented flow, this means recognition failed to fully stop or an error occurred.
             console.error("Error starting recognition:", e);
             document.getElementById('status-text').textContent = 'Error starting mic. Please try reloading.';
             isUserSpeaking = false;
         }
     }
 }
+
 // END USER MESSAGE
 // Function is called in index.html when "end message" button is pressed
 function endMessage() {
     if (isUserSpeaking && recognition) {
-        // Stop recognition. This will trigger the final 'onresult' and then 'onend'.
-        // We handle the transcript check *after* stopping.
+        // Stop recognition. This will trigger the final 'onresult' and then the 'onend' event.
+        // The processing logic is now in recognition.onend.
         recognition.stop();
-        isUserSpeaking = false;
-
-        // Give a brief moment for the final 'onresult' to process if recognition.stop() is synchronous
-        // In practice, since we modified onresult to be cumulative, we just check currentTranscript.
-        
-        // FIX 1: If no text, restart listening instead of just stopping
-        if (currentTranscript.trim()) {
-            conversationHistory.push({ speaker: 'User', text: currentTranscript });
-            document.getElementById('status-text').textContent = 'Processing: ' + currentTranscript;
-
-            // Send user's response to LLM
-            llmSpeak(currentTranscript);
-        } else {
-            // No speech detected. Tell user and start listening again.
-            document.getElementById('status-text').textContent = 'No speech detected. Please try again.';
-            showMicrophoneIcon();
-            
-            // Wait briefly before restarting the mic to avoid race conditions
-            setTimeout(startListening, 500); 
-        }
+        // Do NOT set isUserSpeaking to false here. Let onend handle the state change.
+        document.getElementById('status-text').textContent = 'Stopping recording...';
     }
 }
 
@@ -410,7 +391,7 @@ async function callLLMAPI(prompt) {
         },
         body: JSON.stringify({
             contents: contents,
-            systemInstruction: 
+            systemInstruction: 
             {
                 "parts": [
                     {"text": SYSTEM_INSTRUCTION}
